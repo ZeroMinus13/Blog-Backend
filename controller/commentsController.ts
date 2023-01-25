@@ -1,23 +1,25 @@
 import { Request, Response } from 'express';
 import Comments from '../models/commentsModel';
-
-// const getComments = async (req: Request, res: Response) => {
-//   try {
-//     const comments = await Comments.find();
-//     res.status(200).json(comments);
-//   } catch (err) {
-//     res.status(500).json(err);
-//   }
-// };
+import Blogdata from '../models/blogDataModel';
 
 const createComments = async (req: Request, res: Response) => {
   try {
-    const comments = new Comments(req.body);
+    const comments = new Comments({ username: req.body.username, content: req.body.content });
     await comments.save();
-    res.status(201).json({ message: 'Comment Created' });
+    await Blogdata.findByIdAndUpdate({ _id: req.body._id }, { $push: { comments } });
+    res.status(201).json({ message: 'Comment Created', comments });
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json({ err });
   }
 };
 
-export { createComments };
+const deleteComments = async (req: Request, res: Response) => {
+  try {
+    await Comments.findByIdAndDelete(req.params.id);
+    res.status(204).send('Comment Deleted');
+  } catch (err) {
+    res.status(500).json({ err });
+  }
+};
+
+export { createComments, deleteComments };
