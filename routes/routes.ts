@@ -29,6 +29,5 @@ router.delete(
 
 router.post('/admin', createAdmin);
 router.post('/login', logAdmin);
-router.post('/logout', logOut);
 
 export const routes = router;
