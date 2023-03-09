@@ -12,7 +12,7 @@
     "passport-local": "^1.0.0"
   },
   "name": "blog-back-end",
-  "description": "��#\u0000 \u0000B\u0000l\u0000o\u0000g\u0000-\u0000B\u0000a\u0000c\u0000k\u0000e\u0000n\u0000d\u0000\r\u0000 \u0000",
+  "description": "",
   "version": "1.0.0",
   "main": "app.js",
   "devDependencies": {
@@ -20,16 +20,36 @@
     "@types/bcryptjs": "^2.4.2",
     "@types/cors": "^2.8.13",
     "@types/express": "^4.17.15",
+    "@types/jest": "^29.4.0",
     "@types/mongoose": "^5.11.97",
     "@types/node": "^18.11.18",
     "@types/passport-jwt": "^3.0.8",
+    "@types/supertest": "^2.0.12",
+    "cross-env": "^7.0.3",
+    "jest": "^29.5.0",
+    "supertest": "^6.3.3",
+    "ts-jest": "^29.0.5",
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^4.9.4"
   },
   "scripts": {
-    "start": "node dist/index.js"
+    "start": "cross-env NODE_ENV=production node app.js",
+    "dev": "cross-env NODE_ENV=development nodemon index.ts",
+    "build": "npx tsc",
+    "test": "cross-env NODE_ENV=test jest --verbose"
   },
   "author": "ZeroMinus13",
-  "license": "ISC"
+  "license": "ISC",
+  "jest": {
+    "testEnvironment": "node",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "transform": {
+      "^.+\\.(ts|tsx)$": "ts-jest"
+    }
+  }
 }

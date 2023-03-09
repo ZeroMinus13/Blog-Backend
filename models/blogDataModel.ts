@@ -1,10 +1,10 @@
-import mongoose, { Schema } from 'mongoose';
+import { Schema, model } from 'mongoose'
 
 interface Blogs {
-  title: string;
-  content: string;
-  createdAt: Date;
-  comments: string[];
+  title: string
+  content: string
+  createdAt: Date
+  comments: string[]
 }
 
 const blogSchema = new Schema({
@@ -12,7 +12,7 @@ const blogSchema = new Schema({
   content: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
   comments: [{ type: Schema.Types.ObjectId, ref: 'comments' }],
-});
+})
 
-const Blogdata = mongoose.model<Blogs>('BlogData', blogSchema);
-export default Blogdata;
+const Blogdata = model<Blogs>('BlogData', blogSchema)
+export default Blogdata
