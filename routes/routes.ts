@@ -1,12 +1,13 @@
 import { Router } from 'express'
 import passport from '../passportconfig'
-import { getBlogData, createBlog, deleteBlog, updateBlog, getSingleBlog } from '../controller/blogdataController'
-import { createComments, deleteComments } from '../controller/commentsController'
-import { createAdmin, logAdmin, logOut } from '../controller/blogAdminController'
+import { getBlogData, createBlog, deleteBlog, updateBlog, getSingleBlog } from '../controller/blogdata'
+import { createComments, deleteComments } from '../controller/comments'
+import { createAdmin, logAdmin } from '../controller/blogAdmin'
 
 const router = Router()
 const protectedRoute = passport.authenticate('jwt', { session: false })
 
+router.get('/p', protectedRoute, (req, res) => res.json({ message: 'bing Bing' }))
 router.get('/', getBlogData)
 router.post('/', protectedRoute, createBlog)
 router.put('/:id/updateBlog', protectedRoute, updateBlog)
@@ -20,5 +21,6 @@ router.delete('/comments/:id/delete', protectedRoute, deleteComments)
 
 router.post('/createAdmin', createAdmin)
 router.post('/login', logAdmin)
+//router.delete('/delete', logOut)
 
 export const routes = router

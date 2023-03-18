@@ -1,3 +1,7 @@
+import app from '../app'
+import request from 'supertest'
+const api = request(app)
+
 const initialBlog = [
   {
     title: 'Test Blog',
@@ -8,5 +12,10 @@ const initialBlog = [
     content: 'Testing2',
   },
 ]
-
-export default initialBlog
+const createAdmin = async (user: any) => {
+  await api.post('/createAdmin').send(user)
+}
+const login = async (user: any) => {
+  return await api.post('/login').send(user)
+}
+export { initialBlog, createAdmin, login }

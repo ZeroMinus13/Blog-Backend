@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import { routes } from './routes/routes'
 import passport from './passportconfig'
 import mongoose from 'mongoose'
+import z from 'zod'
 dotenv.config()
 
 const MONGODB_URI = process.env.NODE_ENV === 'test' ? process.env.TEST_MONGODB_URI : process.env.MONGODB_URI
@@ -18,13 +19,18 @@ const app = express()
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(passport.initialize())
-//app.use(cors({ origin: 'http://localhost:5173', credentials: true }))
-app.use(cors())
+app.use(cors({ origin: 'http://localhost:5173', credentials: true }))
 app.use(routes)
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err)
-  res.status(500).json('Something broke!')
+  if (err.name === 'MongoServerError') {
+    res.status(400).json({ error: 'Username already exists' })
+  } else if (err instanceof z.ZodError) {
+    res.status(400).json({ message: err.errors[0].message })
+  } else {
+    res.status(500).json({ message: 'Something broke' })
+  }
 })
 
 export default app

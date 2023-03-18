@@ -8,9 +8,9 @@ const options = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: process.env.JWT_SECRET,
 }
+
 const jwtStrategy = new Strategy(options, async (payload, done) => {
   try {
-    console.log(payload)
     const user = await Admin.findById(payload.id)
     if (!user) {
       return done(null, false)

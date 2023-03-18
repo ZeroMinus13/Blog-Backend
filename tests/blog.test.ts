@@ -1,9 +1,8 @@
-import initialBlog from './blog_helper'
+import { initialBlog, createAdmin, login } from './blog_helper'
 import mongoose from 'mongoose'
 import request from 'supertest'
 import app from '../app'
 import jwt from 'jsonwebtoken'
-import passport from '../passportconfig'
 import dotenv from 'dotenv'
 import Blogdata from '../models/blogContent'
 import Admin from '../models/admin'
@@ -39,23 +38,15 @@ describe('Testing Blogs get', () => {
     const response = await api.get('/')
     expect(response.body[0].comments).toHaveLength(0)
   })
-
-  test('Blog delete request', async () => {
-    const blog = await api.get('/')
-    const { body } = blog
-    console.log(body)
-    const response = await api.delete(`/${body[0]._id}/deletebLog`).expect(204)
-  })
 })
 
 describe('Authentication', () => {
   const user = { username: 'testuser', password: 'testpassword' }
 
   test('Should return a JWT token for a valid user', async () => {
-    await api.post('/createAdmin').send(user)
-    const response = await api.post('/login').send(user).expect(200)
-
-    const { token, id } = response.body
+    await createAdmin(user)
+    const userRes = await login(user)
+    const { token, id } = userRes.body
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET!)
 
     const userId = typeof decodedToken === 'string' ? undefined : decodedToken.userId
@@ -65,15 +56,17 @@ describe('Authentication', () => {
   test('Should return an error for an invalid user', async () => {
     const response = await api.post('/login').send({ username: 'invaliduser', password: 'invalidpassword' }).expect(401)
 
-    expect(response.body.message).toBe('Invalid username')
+    expect(response.body.message).toBe('Invalid username or password')
   })
 
-  test('testing blog creation', async () => {
+  test('Blog creation', async () => {
     const newBlog = {
       title: 'Blog1',
       content: 'Random blog content',
     }
-    const token = jwt.sign({ id: '123' }, process.env.JWT_SECRET!)
+    await createAdmin(user)
+    const userRes = await login(user)
+    const token = userRes.body.token
     await api
       .post('/')
       .send(newBlog)
@@ -86,6 +79,15 @@ describe('Authentication', () => {
 
     expect(response.body).toHaveLength(initialBlog.length + 1)
     expect(content).toContain('Random blog content')
+  })
+
+  test('Blog delete request', async () => {
+    await createAdmin(user)
+    const userRes = await login(user)
+    const token = userRes.body.token
+    const blog = await api.get('/')
+    const { body } = blog
+    await api.delete(`/${body[0]._id}/deleteblog`).set('Authorization', `Bearer ${token}`).expect(204)
   })
 })
 
