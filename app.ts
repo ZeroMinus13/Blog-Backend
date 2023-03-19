@@ -27,9 +27,10 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   if (err.name === 'MongoServerError') {
     res.status(400).json({ error: 'Username already exists' })
   } else if (err instanceof z.ZodError) {
-    res.status(400).json({ message: err.errors[0].message })
+    console.log(err)
+    res.status(400).json({ error: err.errors[0].message })
   } else {
-    res.status(500).json({ message: 'Something broke' })
+    res.status(500).json({ error: 'Something broke' })
   }
 })
 

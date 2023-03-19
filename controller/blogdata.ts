@@ -1,5 +1,7 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import Blogdata from '../models/blogContent'
+import Comments from '../models/comments'
+import zod from '../utils/userValidation'
 
 const getBlogData = async (req: Request, res: Response) => {
   try {
@@ -11,27 +13,33 @@ const getBlogData = async (req: Request, res: Response) => {
   }
 }
 
-const createBlog = async (req: Request, res: Response) => {
+const createBlog = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const blogs = new Blogdata(req.body)
+    const blogs = new Blogdata(zod.blogZod.parse(req.body))
     await blogs.save()
-    res.status(201).json({ message: 'Blog created successfully' })
+    res.status(201).end()
   } catch (err) {
-    res.status(500).json({ err: err })
+    next(err)
   }
 }
 
-const updateBlog = async (req: Request, res: Response) => {
+const updateBlog = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const blogs = await Blogdata.findByIdAndUpdate(req.params.id, req.body, { new: true })
-    res.status(200).json({ message: 'Blog successfully updated', blogs })
+    const blogs = await Blogdata.findByIdAndUpdate(req.params.id, zod.blogZod.parse(req.body), { new: true })
+    res.status(200).json(blogs)
   } catch (err) {
-    res.status(500).json({ err })
+    next(err)
   }
 }
 
 const deleteBlog = async (req: Request, res: Response) => {
   try {
+    const blog = await Blogdata.findById(req.params.id)
+    if (!blog) {
+      return res.status(404).json({ message: 'Blog post not found' })
+    }
+    const commentIds = blog.comments.map((commentId) => commentId.toString())
+    await Comments.deleteMany({ _id: { $in: commentIds } })
     await Blogdata.findByIdAndDelete(req.params.id)
     res.status(204).end()
   } catch (err) {
@@ -44,7 +52,7 @@ const getSingleBlog = async (req: Request, res: Response) => {
     const blog = await Blogdata.findById(req.params.id).populate('comments')
     res.status(200).json(blog)
   } catch (err) {
-    res.status(500).send(err)
+    res.status(500).json({ err })
   }
 }
 

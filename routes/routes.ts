@@ -21,6 +21,5 @@ router.delete('/comments/:id/delete', protectedRoute, deleteComments)
 
 router.post('/createAdmin', createAdmin)
 router.post('/login', logAdmin)
-//router.delete('/delete', logOut)
 
 export const routes = router

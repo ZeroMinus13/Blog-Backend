@@ -6,7 +6,7 @@ import zod from '../utils/userValidation'
 
 const createAdmin = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { username, password } = zod.parse(req.body)
+    const { username, password } = zod.userZod.parse(req.body)
     const hashedPassword = await bcrypt.hash(password.toLowerCase(), 10)
     const admin = new Admin({ username, password: hashedPassword })
     let savedA = await admin.save()
@@ -19,11 +19,11 @@ const createAdmin = async (req: Request, res: Response, next: NextFunction) => {
 
 const logAdmin = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { username, password } = zod.parse(req.body)
+    const { username, password } = zod.userZod.parse(req.body)
     const user = await Admin.findOne({ username })
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).json({ message: 'Invalid username or password' })
+      return res.status(401).json({ error: 'Invalid username or password' })
     }
     const TokenforUser = {
       username: user.username,
@@ -36,10 +36,5 @@ const logAdmin = async (req: Request, res: Response, next: NextFunction) => {
     next(err)
   }
 }
-
-// const logOut = async (req: Request, res: Response) => {
-//   await Admin.deleteMany({})
-//   res.json({ message: 'Deleted All names' })
-// }
 
 export { createAdmin, logAdmin }
