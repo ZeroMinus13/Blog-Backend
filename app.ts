@@ -20,7 +20,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
 
-app.use(cors({ origin: 'https://blog-admin-inky.vercel.app/' }));
+app.use(cors({ origin: ['https://blog-admin-inky.vercel.app/', 'http://localhost:5173/'] }));
 
 app.use(routes);
 
