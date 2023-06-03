@@ -20,6 +20,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
 app.use(cors({ origin: process.env.FRONT_END, credentials: true }));
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', process.env.FRONT_END!);
+  next();
+});
 app.use(routes);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
