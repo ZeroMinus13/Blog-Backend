@@ -19,9 +19,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
-
-app.use(cors({ origin: ['https://blog-admin-inky.vercel.app/', 'http://localhost:5173/'] }));
-
+app.use(cors({ origin: ['http://localhost:5173', process.env.FRONT_END!], credentials: true }));
 app.use(routes);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
