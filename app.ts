@@ -19,7 +19,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
-app.use(cors({ origin: process.env.FRONT_END!, credentials: true }));
+app.use(cors({ origin: process.env.FRONT_END, credentials: true }));
 app.use(routes);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
